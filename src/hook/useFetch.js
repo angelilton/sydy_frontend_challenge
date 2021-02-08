@@ -15,9 +15,9 @@ const useFetch = (search) => {
 
     try {
       const resp = await axios(`${url}${search}`)
-      const { EUR, USD, GBP } = resp.data.bpi
+      // const { EUR, USD, GBP } = resp.data.bpi
 
-      setData([EUR.rate, USD.rate, GBP.rate])
+      setData(resp.data.bpi)
     } catch (error) {
       setIsError(true)
     }
@@ -30,7 +30,7 @@ const useFetch = (search) => {
     fetchData(search)
   }, [search])
 
-  return { data, setData, fetchData, isLoading, isError }
+  return { data, isLoading, isError }
 }
 
 export default useFetch
