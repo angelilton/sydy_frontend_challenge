@@ -17,7 +17,7 @@ const Dashboard = () => {
   const { EUR, USD, GBP } = data
 
   return (
-    <form>
+    <Form>
       {USD && (
         <Wrapper>
           <Label selected={checked === 'EUR'}>
@@ -84,7 +84,7 @@ const Dashboard = () => {
           </Label>
         </Wrapper>
       )}
-    </form>
+    </Form>
   )
 }
 
@@ -111,6 +111,9 @@ const Wrapper = styled.div`
   height: 150px;
   width: 500px;
   margin: auto;
+`
+const Form = styled.form`
+  margin-bottom: 25px;
 `
 
 export default Dashboard

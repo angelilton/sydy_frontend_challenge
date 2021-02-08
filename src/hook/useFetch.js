@@ -30,7 +30,7 @@ const useFetch = (search) => {
     fetchData(search)
   }, [search])
 
-  return { data, isLoading, isError }
+  return { data, fetchData, isLoading, isError }
 }
 
 export default useFetch
