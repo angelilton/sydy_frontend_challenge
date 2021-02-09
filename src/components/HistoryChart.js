@@ -1,24 +1,27 @@
-import React, { useMemo, useRef, useEffect, useState } from 'react'
+import React, { useMemo, useEffect, useState } from 'react'
 import moment from 'moment'
 import { useFetch } from 'hook'
 import styled from 'styled-components'
 import { Line } from 'react-chartjs-2'
 
 const ApiUrl = `historical/close.json`
-const today = new Date().toISOString().slice(0, 10)
-const initialDateEnd = moment().subtract(7, 'days').calendar('yyyy-MM-dd')
+const today = moment().format('YYYY-MM-DD')
+const initialDateEnd = moment()
+  .subtract(7, 'days')
+  .calendar({ sameElse: 'YYYY-MM-DD' })
 
 const HistoryChart = () => {
-  const { data, fetchData } = useFetch(ApiUrl)
+  const { data, fetchData } = useFetch(
+    `${ApiUrl}?start=${initialDateEnd}&end=${today}`
+  )
   const [dateStart, setDateStart] = useState(today)
   const [dateEnd, setDateEnd] = useState(initialDateEnd)
-  console.log(today, initialDateEnd)
 
-  // useEffect(() => {
-  //   if (dateEnd !== null) {
-  //     console.log('change')
-  //   }
-  // }, [dateEnd])
+  useEffect(() => {
+    if (dateEnd !== null) {
+      fetchData(`${ApiUrl}?start=${dateEnd}&end=${dateStart}`)
+    }
+  }, [dateEnd])
 
   const newData = Object.keys(data).map((item) => {
     return {
@@ -27,18 +30,17 @@ const HistoryChart = () => {
     }
   })
 
-  console.log(moment().subtract(7, 'days').calendar())
-
   const chartData = useMemo(
     () => ({
-      labels: newData.slice(-7).map(({ label }) => label),
+      labels: newData.map(({ label }) => label),
       datasets: [
         {
           label: 'USD: ',
           fill: true,
           backgroundColor: 'rgba(75,192,192,0.4)',
           borderColor: 'rgba(75,192,192,1)',
-          data: newData.slice(-7).map(({ rate }) => rate)
+          borderWidth: 4,
+          data: newData.map(({ rate }) => rate)
         }
       ]
     }),
@@ -53,7 +55,7 @@ const HistoryChart = () => {
           <input
             value={dateStart}
             type="date"
-            onChange={(event) => {
+            onChange={(e) => {
               setDateStart(event.target.value)
             }}
           />
@@ -62,10 +64,10 @@ const HistoryChart = () => {
         <label>
           ATE:{' '}
           <input
-            valeu={dateEnd}
+            value={dateEnd}
             type="date"
-            onChange={(event) => setDateEnd(event.target.value)}
-          ></input>
+            onChange={(e) => setDateEnd(e.target.value)}
+          />
         </label>
       </InputGroup>
       <Line
@@ -80,16 +82,18 @@ const HistoryChart = () => {
 }
 
 const InputGroup = styled.div`
+  width: 500px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-self: center;
   margin: 12px 0;
 `
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 250px;
-  width: 500px;
+  height: 100%;
+  width: 800px;
   margin: auto;
 `
 
